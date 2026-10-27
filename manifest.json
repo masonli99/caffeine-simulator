@@ -1,0 +1,21 @@
+{
+  "name": "咖啡因预测器｜Sugar Crash Simulator",
+  "short_name": "咖啡因模拟器",
+  "description": "饮品与睡眠咖啡因模拟器",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fffdf9",
+  "theme_color": "#79563f",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

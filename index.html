@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sugar Crash Simulator | 饮品与睡眠模拟器</title>
+<style>
+:root{
+    --cream:#fbf6ef;--paper:#fffdf9;--brown:#79563f;--brown-dark:#4d3427;
+    --latte:#d8b99a;--caramel:#b77b4b;--ink:#2f2925;--muted:#82766d;
+    --line:#eadfd3;--green:#5f8069;--soft-green:#eaf1e9;--soft-pink:#f7e8df;
+    --shadow:0 14px 40px rgba(82,54,34,.08)
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.5;
+padding:24px max(18px,calc((100% - 1180px)/2));
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--line);background:rgba(251,246,239,0.85);position:sticky;top:0;z-index:10}
+.brand{display:flex;align-items:center;gap:10px;font-weight:850;letter-spacing:-.4px;color:var(--brown-dark)}
+.card{background:var(--paper);border-radius:22px;padding:24px;box-shadow:var(--shadow);margin-top:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+label{display:block;margin-bottom:6px;font-size:14px;color:var(--brown)}
+input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.btn{background:var(--brown);color:white;border:none;padding:12px 18px;border-radius:12px;font-weight:600;margin-top:10px}
+.btn:hover{background:var(--brown-dark)}
+.result{margin-top:18px;padding:16px;background:var(--soft-green);border-radius:14px}
+.note{margin-top:12px;color:var(--muted);font-size:13px}
+canvas{width:100%;height:300px;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="brand">Sugar Crash Simulator</div>
+<div style="font-size:14px;color:var(--muted)">咖啡因代谢预测</div>
+</div>
+
+<div class="card">
+<h3>☕ 摄入信息</h3>
+<div class="grid">
+<div>
+<label>咖啡因总量 (mg)</label>
+<input id="caffeine" type="number" value="150" min="0">
+</div>
+<div>
+<label>糖分 (g)</label>
+<input id="sugar" type="number" value="20" min="0">
+</div>
+<div>
+<label>摄入距今时长 (小时)</label>
+<input id="elapsed" type="number" value="0" min="0" step="0.1">
+</div>
+</div>
+</div>
+
+<!-- === 新增板块：用户生理参数（样式沿用原有card、grid，和页面风格统一）=== -->
+<div class="card">
+<h3>🧬 个人情况（自动调整咖啡因半衰期）</h3>
+<div class="grid">
+<div>
+<label>吸烟状态</label>
+<select id="smoke">
+<option value="no">不吸烟（默认）</option>
+<option value="yes">吸烟者</option>
+</select>
+</div>
+<div>
+<label>服用口服避孕药</label>
+<select id="oc">
+<option value="no">否</option>
+<option value="yes">是</option>
+</select>
+</div>
+<div>
+<label>肝功能状态</label>
+<select id="liver">
+<option value="normal">肝功能正常</option>
+<option value="impaired">肝功能偏弱</option>
+</select>
+</div>
+<div>
+<label>年龄分组</label>
+<select id="age">
+<option value="adult">成年人 18–40岁</option>
+<option value="young">青少年</option>
+<option value="old">中老年 >55岁</option>
+</select>
+</div>
+</div>
+</div>
+
+<div class="card">
+<button class="btn" onclick="calc()">开始计算 & 绘制曲线</button>
+
+<div class="result" id="resBox">
+<div>当前体内剩余咖啡因：<strong id="resCaf">--</strong> mg</div>
+<div>本次计算半衰期：<strong id="resHalf">--</strong> h</div>
+<div>预计咖啡因降至 20mg 以下：<strong id="resTime">--</strong></div>
+</div>
+<div class="note">⚠️ 模型说明：采用标准一级消除动力学一室模型，仅为群体统计估算，个体差异很大，不能作为医疗判断依据。</div>
+<canvas id="chart"></canvas>
+</div>
+
+<script>
+// 获取DOM
+const $ = s=>document.querySelector(s);
+let ctx = $("#chart").getContext("2d");
+
+// 【核心函数：根据选项动态计算半衰期，替换原来固定值】
+function getHalfLife(){
+    let hl = 5.0; // 基准半衰期
+    const smoke = $("#smoke").value;
+    const oc = $("#oc").value;
+    const liver = $("#liver").value;
+    const age = $("#age").value;
+
+    if(smoke==="yes") hl -= 1.8;
+    if(oc==="yes") hl += 3.5;
+    if(liver==="impaired") hl += 3.0;
+    if(age==="young") hl -= 0.8;
+    if(age==="old") hl += 1.0;
+
+    return Math.max(2.5, hl); // 下限保护，避免不合理数值
+}
+
+function calc(){
+    const caf0 = Number($("#caffeine").value);
+    const sugar = Number($("#sugar").value);
+    const elapsed = Number($("#elapsed").value);
+    const hl = getHalfLife();
+
+    // 一级消除公式：C = C0 * 0.5^(t / half)
+    const remaining = caf0 * Math.pow(0.5, elapsed / hl);
+
+    // 求降到20mg需要多久（从摄入时刻算起）
+    const target = 20;
+    let timeTo20 = "已经低于20mg";
+    if(remaining > target){
+        const totalT = hl * Math.log2(caf0 / target);
+        const wait = totalT - elapsed;
+        timeTo20 = `${wait.toFixed(1)}小时后`;
+    }
+
+    $("#resCaf").textContent = remaining.toFixed(1);
+    $("#resHalf").textContent = hl.toFixed(1);
+    $("#resTime").textContent = timeTo20;
+
+    drawCurve(caf0, hl, elapsed);
+}
+
+function drawCurve(caf0, hl, nowT){
+    ctx.clearRect(0,0,$("#chart").width,$("#chart").height);
+    const w = $("#chart").width;
+    const h = $("#chart").height;
+    ctx.beginPath();
+    ctx.strokeStyle="#79563f";
+    ctx.lineWidth=2;
+    const maxT = Math.max(nowT + 8, hl*3);
+    for(let x=0;x<=w;x++){
+        const t = x/w * maxT;
+        const c = caf0 * Math.pow(0.5, t/hl);
+        const y = h - (c/caf0)*h;
+        if(x===0) ctx.moveTo(x,y);
+        else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    // 当前时刻标记点
+    const xNow = nowT/maxT * w;
+    const cNow = caf0 * Math.pow(0.5, nowT/hl);
+    const yNow = h - (cNow/caf0)*h;
+    ctx.fillStyle="#b77b4b";
+    ctx.beginPath();
+    ctx.arc(xNow,yNow,6,0,Math.PI*2);
+    ctx.fill();
+}
+
+calc();
+</script>
+</body>
+</html>
