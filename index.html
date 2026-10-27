@@ -3,179 +3,342 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sugar Crash Simulator | 饮品与睡眠模拟器</title>
+<title>Sugar Crash Simulator｜饮品与睡眠模拟器</title>
 <style>
 :root{
-    --cream:#fbf6ef;--paper:#fffdf9;--brown:#79563f;--brown-dark:#4d3427;
-    --latte:#d8b99a;--caramel:#b77b4b;--ink:#2f2925;--muted:#82766d;
-    --line:#eadfd3;--green:#5f8069;--soft-green:#eaf1e9;--soft-pink:#f7e8df;
-    --shadow:0 14px 40px rgba(82,54,34,.08)
+  --cream:#fbf6ef;--paper:#fffdf9;--brown:#79563f;--brown-dark:#4d3427;
+  --latte:#d8b99a;--caramel:#b77b4b;--ink:#2f2925;--muted:#82766d;
+  --line:#eadfd3;--green:#5f8069;--soft-green:#eaf1e9;--soft-pink:#f7e8df;
+  --shadow:0 14px 40px rgba(82,54,34,.08)
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.5;
-padding:24px max(18px,calc((100% - 1180px)/2));
-}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.55}
 button,input,select{font:inherit}
 button{cursor:pointer}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--line);background:rgba(251,246,239,0.85);position:sticky;top:0;z-index:10}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:18px max(22px,calc((100% - 1180px)/2));border-bottom:1px solid var(--line);background:rgba(255,253,249,.88);position:sticky;top:0;z-index:5;backdrop-filter:blur(12px)}
 .brand{display:flex;align-items:center;gap:10px;font-weight:850;letter-spacing:-.4px;color:var(--brown-dark)}
-.card{background:var(--paper);border-radius:22px;padding:24px;box-shadow:var(--shadow);margin-top:20px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-label{display:block;margin-bottom:6px;font-size:14px;color:var(--brown)}
-input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff}
-.btn{background:var(--brown);color:white;border:none;padding:12px 18px;border-radius:12px;font-weight:600;margin-top:10px}
-.btn:hover{background:var(--brown-dark)}
-.result{margin-top:18px;padding:16px;background:var(--soft-green);border-radius:14px}
-.note{margin-top:12px;color:var(--muted);font-size:13px}
-canvas{width:100%;height:300px;margin-top:16px}
+.logo{width:38px;height:38px;border-radius:13px;background:var(--brown);display:grid;place-items:center;color:#fff;font-size:21px}
+.nav{display:flex;gap:8px;align-items:center}
+.nav button,.lang{border:0;background:transparent;color:var(--muted);padding:9px 12px;border-radius:10px}
+.nav button.active,.nav button:hover{background:#f1e5d9;color:var(--brown-dark)}
+.lang{border:1px solid var(--line);background:white;color:var(--brown);font-weight:700}
+main{max-width:1180px;margin:auto;padding:34px 22px 60px}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center;padding:28px 0 38px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--brown);font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.dot{width:7px;height:7px;border-radius:50%;background:#7e9a76}
+h1{font-size:clamp(35px,5vw,58px);line-height:1.08;letter-spacing:-1.8px;margin:16px 0}
+h1 span{color:var(--caramel)}
+.lead{color:var(--muted);font-size:17px;max-width:600px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+.btn{border:0;border-radius:13px;padding:12px 18px;font-weight:750;transition:.15s}
+.btn.primary{background:var(--brown);color:white;box-shadow:0 7px 18px #79563f25}
+.btn.primary:hover{background:var(--brown-dark);transform:translateY(-1px)}
+.btn.secondary{background:white;color:var(--brown);border:1px solid var(--line)}
+.hero-art{background:linear-gradient(145deg,#f0dfcc,#e8cdb2);border-radius:28px;min-height:320px;position:relative;overflow:hidden;display:grid;place-items:center}
+.blob{position:absolute;border-radius:50%;background:#fff8ed66}
+.blob.one{width:240px;height:240px;top:-65px;right:-35px}.blob.two{width:160px;height:160px;bottom:-60px;left:-20px}
+.cup{width:145px;height:190px;background:linear-gradient(90deg,#fdf7ed,#fffdf8 55%,#ead5bc);border-radius:18px 18px 42px 42px;position:relative;box-shadow:12px 20px 30px #70472b25;transform:rotate(-7deg);z-index:1;border:2px solid #fff9}
+.cup:before{content:"";position:absolute;left:-7px;right:-7px;top:-12px;height:22px;background:#fff9ed;border:5px solid #a57a59;border-radius:12px}
+.tea{position:absolute;left:5px;right:5px;top:18px;height:115px;background:linear-gradient(#bb8b62,#8c5b3c);border-radius:8px 8px 24px 24px}
+.pearls{position:absolute;bottom:12px;left:15px;right:15px;display:flex;justify-content:space-around;flex-wrap:wrap;gap:6px}
+.pearls i{width:17px;height:17px;border-radius:50%;background:#4b2e21;box-shadow:inset 3px 3px 3px #9a7052}
+.straw{position:absolute;width:13px;height:150px;background:#fff7e9;border:3px solid #b87d4c;top:-130px;left:82px;transform:rotate(9deg);border-radius:8px}
+.art-note{position:absolute;bottom:24px;right:22px;background:#fffdf4dd;border:1px solid #fff;border-radius:15px;padding:12px 15px;font-size:13px;z-index:2;box-shadow:var(--shadow)}
+.art-note b{display:block;color:var(--brown-dark);font-size:15px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.78fr);gap:22px;align-items:start}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:var(--shadow)}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:20px}
+h2{font-size:22px;margin:0;color:var(--brown-dark);letter-spacing:-.4px}
+h3{font-size:16px;margin:0 0 10px;color:var(--brown-dark)}
+.sub{font-size:13px;color:var(--muted);margin-top:5px}
+.step{font-size:12px;font-weight:800;color:var(--caramel);background:#f6e8d9;padding:6px 9px;border-radius:9px;white-space:nowrap}
+.field{margin-bottom:19px}
+label{display:block;font-size:14px;font-weight:750;margin-bottom:8px}
+select,input[type=time],input[type=number],input[type=text]{width:100%;border:1px solid #e5d8cb;background:#fff;border-radius:12px;padding:12px 13px;color:var(--ink);outline:none}
+select:focus,input:focus{border-color:var(--caramel);box-shadow:0 0 0 3px #b77b4b18}
+.drink-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.drink{border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 8px;text-align:center;color:var(--ink);min-height:93px}
+.drink .emoji{font-size:25px;display:block;margin-bottom:4px}
+.drink small{font-size:11px;color:var(--muted)}
+.drink.selected{border:2px solid var(--caramel);background:#fff7ee;padding:11px 7px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+details{border-top:1px solid var(--line);padding-top:15px;margin-top:8px}
+summary{cursor:pointer;color:var(--brown);font-weight:800}
+.optional-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:15px}
+.small-note{font-size:12px;color:var(--muted);margin-top:7px}
+.upload{border:1px dashed #cdb49e;border-radius:14px;background:#fffaf4;padding:15px;text-align:center;color:var(--brown);font-size:13px}
+.upload input{max-width:100%;margin-top:9px}
+#photoPreview{max-width:100%;max-height:160px;border-radius:10px;margin-top:10px;display:none}
+.result-intro{display:flex;gap:12px;align-items:center;margin-bottom:18px}
+.result-icon{width:45px;height:45px;background:var(--soft-green);border-radius:14px;display:grid;place-items:center;font-size:22px}
+.pill{background:var(--soft-green);color:#42694d;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:800;white-space:nowrap}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metric{background:#fcf6ef;border:1px solid #f0e4d7;border-radius:15px;padding:14px}
+.metric .k{font-size:12px;color:var(--muted)}
+.metric .v{font-size:25px;font-weight:850;color:var(--brown-dark);margin:4px 0}
+.metric .desc{font-size:11px;color:var(--muted)}
+.chart-wrap{margin-top:19px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 12px 7px}
+.chart-title{display:flex;justify-content:space-between;gap:10px;font-size:13px;font-weight:800;color:var(--brown-dark)}
+svg{width:100%;height:auto;display:block}
+.legend{font-size:11px;color:var(--muted)}
+.timeline{margin-top:18px}
+.event{display:grid;grid-template-columns:62px 15px 1fr;gap:10px;align-items:start;margin:14px 0}
+.event time{font-size:12px;color:var(--muted);padding-top:2px}
+.event .line{height:100%;position:relative;border-left:2px solid #e8d7c5;margin-left:5px;min-height:40px}
+.event .line:before{content:"";position:absolute;left:-6px;top:5px;width:10px;height:10px;border-radius:50%;background:var(--caramel);border:2px solid #fff}
+.event b{font-size:13px;color:var(--brown-dark)}
+.event p{font-size:12px;color:var(--muted);margin:3px 0 0}
+.ai-box{margin-top:17px;background:#f6eee5;border:1px solid #ead8c6;border-radius:16px;padding:16px}
+.ai-tag{font-size:11px;font-weight:900;letter-spacing:.7px;color:var(--caramel)}
+.ai-box p{margin:7px 0 0;font-size:14px}
+.suggestions{display:grid;gap:9px;margin-top:11px}
+.suggestion{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:13px;padding:12px;background:white}
+.suggestion .check{color:var(--green);font-weight:900}
+.suggestion p{font-size:13px;margin:0}
+.science{margin-top:22px}
+.science-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+.science-item{background:#fff;border:1px solid var(--line);border-radius:15px;padding:16px}
+.science-item .icon{font-size:23px}
+.science-item p{font-size:12px;color:var(--muted);margin:6px 0 0}
+footer{max-width:1180px;margin:auto;padding:0 22px 35px;color:var(--muted);font-size:12px}
+.disclaimer{padding:15px 17px;border-radius:14px;background:#f4e9dc;color:#6d5542;margin-top:18px;font-size:12px}
+.hidden{display:none!important}
+@media(max-width:850px){.hero{grid-template-columns:1fr}.hero-art{min-height:250px}.layout{grid-template-columns:1fr}.nav button{padding:8px 7px;font-size:12px}.science-grid{grid-template-columns:1fr}}
+@media(max-width:520px){.topbar{padding:12px 14px;flex-wrap:wrap;gap:10px}.brand{font-size:14px}.nav{order:3;width:100%;justify-content:space-between}.nav button{font-size:11px}.lang{margin-left:auto}main{padding:20px 13px 40px}.hero{padding-top:12px}.hero-art{min-height:220px}.card{padding:17px}.drink-grid{grid-template-columns:repeat(2,1fr)}.two,.optional-grid{grid-template-columns:1fr}.metric .v{font-size:22px}}
 </style>
 </head>
 <body>
-<div class="topbar">
-<div class="brand">Sugar Crash Simulator</div>
-<div style="font-size:14px;color:var(--muted)">咖啡因代谢预测</div>
-</div>
+<header class="topbar">
+  <div class="brand"><div class="logo">🧋</div><span>SUGAR CRASH <span style="font-weight:500;color:#a17c61">SIMULATOR</span></span></div>
+  <nav class="nav">
+    <button class="active" data-scroll="home" data-i18n="navHome">首页</button>
+    <button data-scroll="planner" data-i18n="navPlan">快速模拟</button>
+    <button data-scroll="science" data-i18n="navScience">科学与隐私</button>
+  </nav>
+  <button class="lang" id="langToggle">EN / 中</button>
+</header>
 
-<div class="card">
-<h3>☕ 摄入信息</h3>
-<div class="grid">
-<div>
-<label>咖啡因总量 (mg)</label>
-<input id="caffeine" type="number" value="150" min="0">
-</div>
-<div>
-<label>糖分 (g)</label>
-<input id="sugar" type="number" value="20" min="0">
-</div>
-<div>
-<label>摄入距今时长 (小时)</label>
-<input id="elapsed" type="number" value="0" min="0" step="0.1">
-</div>
-</div>
-</div>
+<main id="home">
+  <section class="hero">
+    <div>
+      <div class="eyebrow"><span class="dot"></span><span data-i18n="eyebrow">SMART SIPS · BETTER SLEEP</span></div>
+      <h1 data-i18n="heroTitle">今晚想几点睡？<br><span>先从这杯开始规划。</span></h1>
+      <p class="lead" data-i18n="heroLead">选一杯你喜欢的饮品，看看其中的咖啡因可能在目标睡觉时间还剩多少。不是诊断，而是让选择更有意识。</p>
+      <div class="hero-actions">
+        <button class="btn primary" id="startBtn" data-i18n="start">开始 10 秒模拟 →</button>
+        <button class="btn secondary" id="scienceBtn" data-i18n="learn">了解科学模型</button>
+      </div>
+    </div>
+    <div class="hero-art" aria-label="奶茶插画">
+      <div class="blob one"></div><div class="blob two"></div>
+      <div class="cup"><div class="straw"></div><div class="tea"></div><div class="pearls"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="art-note"><b data-i18n="artTitle">一杯饮品，一份小提醒</b><span data-i18n="artText">了解可能的影响，不必过度担心。</span></div>
+    </div>
+  </section>
 
-<!-- === 新增板块：用户生理参数（样式沿用原有card、grid，和页面风格统一）=== -->
-<div class="card">
-<h3>🧬 个人情况（自动调整咖啡因半衰期）</h3>
-<div class="grid">
-<div>
-<label>吸烟状态</label>
-<select id="smoke">
-<option value="no">不吸烟（默认）</option>
-<option value="yes">吸烟者</option>
-</select>
-</div>
-<div>
-<label>服用口服避孕药</label>
-<select id="oc">
-<option value="no">否</option>
-<option value="yes">是</option>
-</select>
-</div>
-<div>
-<label>肝功能状态</label>
-<select id="liver">
-<option value="normal">肝功能正常</option>
-<option value="impaired">肝功能偏弱</option>
-</select>
-</div>
-<div>
-<label>年龄分组</label>
-<select id="age">
-<option value="adult">成年人 18–40岁</option>
-<option value="young">青少年</option>
-<option value="old">中老年 >55岁</option>
-</select>
-</div>
-</div>
-</div>
+  <section class="layout" id="planner">
+    <div class="card">
+      <div class="card-head">
+        <div><h2 data-i18n="plannerTitle">今晚的饮品计划</h2><div class="sub" data-i18n="plannerSub">只填 3 项即可查看模拟结果；其他信息完全可选。</div></div>
+        <span class="step" data-i18n="step">STEP 01 / 03</span>
+      </div>
+      <div class="field">
+        <label data-i18n="drinkLabel">1. 选择饮品 / 零食</label>
+        <div class="drink-grid" id="drinkGrid">
+          <button class="drink selected" data-drink="milkTea"><span class="emoji">🧋</span><b data-i18n="dMilk">珍珠奶茶</b><br><small>Bubble milk tea</small></button>
+          <button class="drink" data-drink="kopi"><span class="emoji">☕</span><b>咖啡乌 kopi</b><br><small>Local coffee</small></button>
+          <button class="drink" data-drink="coffee"><span class="emoji">☕</span><b data-i18n="dCoffee">黑咖啡</b><br><small>Black coffee</small></button>
+          <button class="drink" data-drink="energy"><span class="emoji">⚡</span><b data-i18n="dEnergy">能量饮料</b><br><small>Energy drink</small></button>
+          <button class="drink" data-drink="chocolate"><span class="emoji">🍫</span><b data-i18n="dChoc">巧克力</b><br><small>Chocolate</small></button>
+          <button class="drink" data-drink="fruitTea"><span class="emoji">🍊</span><b data-i18n="dFruit">水果茶</b><br><small>Fruit tea</small></button>
+        </div>
+      </div>
+      <div class="two">
+        <div class="field"><label for="size" data-i18n="sizeLabel">2. 杯型 / 容量</label>
+          <select id="size"><option value="250">小杯 · 250 mL</option><option value="350">中杯 · 350 mL</option><option value="500" selected>大杯 · 500 mL</option><option value="700">超大杯 · 700 mL</option></select>
+        </div>
+        <div class="field"><label for="sleepTime" data-i18n="sleepLabel">3. 计划入睡时间</label><input type="time" id="sleepTime" value="23:00"></div>
+      </div>
+      <div class="two">
+        <div class="field"><label for="drinkTime" data-i18n="drinkTimeLabel">饮用时间（默认现在）</label><input type="time" id="drinkTime"></div>
+        <div class="field"><label for="sweetness" data-i18n="sweetLabel">甜度（可选）</label>
+          <select id="sweetness"><option value="0.5" data-i18n="lessSweet">少糖 / 低糖（估算）</option><option value="0.75" selected data-i18n="halfSweet">半糖（估算）</option><option value="1" data-i18n="fullSweet">全糖（估算）</option><option value="0.6" data-i18n="unknownSweet">不确定 / 默认估算</option></select>
+        </div>
+      </div>
+      <details>
+        <summary data-i18n="personal">＋ 个性化设置（可选）</summary>
+        <div class="optional-grid">
+          <div><label for="sensitivity" data-i18n="sensLabel">咖啡因对你的影响</label><select id="sensitivity"><option value="low" data-i18n="sensLow">几乎没感觉</option><option value="normal" selected data-i18n="sensNormal">正常 / 不确定</option><option value="high" data-i18n="sensHigh">到半夜都很精神</option></select></div>
+          <div><label for="age" data-i18n="ageLabel">年龄（可不填）</label><input id="age" type="number" min="1" max="120" placeholder="—"></div>
+          <div><label for="routine" data-i18n="routineLabel">平时作息</label><select id="routine"><option data-i18n="routineRegular">比较规律</option><option data-i18n="routineLate">经常晚睡</option><option data-i18n="routineShift">作息不固定</option></select></div>
+          <div><label for="frequency" data-i18n="freqLabel">点单频率（可选）</label><select id="frequency"><option value="0" data-i18n="freqNo">暂不记录</option><option value="1" data-i18n="freqRare">每周 1–2 次</option><option value="3" data-i18n="freqSome">每周 3–4 次</option><option value="6" data-i18n="freqOften">每周 5 次以上</option></select></div>
+        </div>
+        <p class="small-note" data-i18n="privacyNote">身高、体重不是必填项，本原型不收集它们；输入仅在当前页面计算，不会上传服务器。</p>
+      </details>
+      <div class="field" style="margin-top:18px">
+        <label data-i18n="photoLabel">拍摄 / 上传营养标签（演示入口）</label>
+        <div class="upload"><span data-i18n="photoText">📷 选择营养标签图片，在本地预览</span><br><input type="file" id="labelPhoto" accept="image/*"><img id="photoPreview" alt="营养标签图片预览"><div class="small-note" data-i18n="photoNote">当前版本仅提供本地预览，尚未接入 OCR / 视觉 AI，不会假装已经识别营养数据。</div></div>
+      </div>
+      <button class="btn primary" style="width:100%" id="simulateBtn" data-i18n="simulate">生成我的模拟结果 →</button>
+    </div>
 
-<div class="card">
-<button class="btn" onclick="calc()">开始计算 & 绘制曲线</button>
+    <aside class="card" id="results">
+      <div class="card-head"><div><h2 data-i18n="resultTitle">你的模拟结果</h2><div class="sub" data-i18n="resultSub">依据简化模型，非个人睡眠预测。</div></div><span class="pill" data-i18n="demo">演示估算</span></div>
+      <div class="result-intro"><div class="result-icon">🌙</div><div><b id="resultHeadline" data-i18n="initialHeadline">先选择饮品，开始模拟</b><div class="sub" id="resultSubline" data-i18n="initialSub">你的理论残留曲线会显示在这里。</div></div></div>
+      <div class="metric-grid">
+        <div class="metric"><div class="k" data-i18n="caffeineMetric">估算咖啡因</div><div class="v" id="caffeineValue">—</div><div class="desc" data-i18n="caffeineDesc">毫克 · 示例范围</div></div>
+        <div class="metric"><div class="k" data-i18n="residualMetric">目标睡觉时理论残留</div><div class="v" id="residualValue">—</div><div class="desc" data-i18n="residualDesc">毫克 · 半衰期模型</div></div>
+        <div class="metric"><div class="k" data-i18n="sugarMetric">估算糖分</div><div class="v" id="sugarValue">—</div><div class="desc" data-i18n="sugarDesc">克 · 非品牌实测数据</div></div>
+        <div class="metric"><div class="k" data-i18n="timeMetric">饮用至睡觉</div><div class="v" id="hoursValue">—</div><div class="desc" data-i18n="timeDesc">时间间隔，不代表入睡难度</div></div>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-title"><span data-i18n="chartTitle">咖啡因理论残留曲线</span><span class="legend" data-i18n="chartLegend">默认半衰期 5 小时</span></div>
+        <svg id="chart" viewBox="0 0 340 170" role="img" aria-label="咖啡因残留曲线">
+          <line x1="35" y1="20" x2="35" y2="135" stroke="#d8c9ba"/><line x1="35" y1="135" x2="320" y2="135" stroke="#d8c9ba"/>
+          <text x="8" y="24" font-size="10" fill="#82766d">100%</text><text x="12" y="81" font-size="10" fill="#82766d">50%</text><text x="20" y="139" font-size="10" fill="#82766d">0</text>
+          <path id="curve" d="M35 20 L320 135" fill="none" stroke="#b77b4b" stroke-width="3" stroke-linecap="round"/>
+          <line x1="35" y1="77" x2="320" y2="77" stroke="#e8ded3" stroke-dasharray="4 4"/>
+          <text x="35" y="155" font-size="10" fill="#82766d">0h</text><text x="100" y="155" font-size="10" fill="#82766d">5h</text><text x="165" y="155" font-size="10" fill="#82766d">10h</text><text x="230" y="155" font-size="10" fill="#82766d">15h</text><text x="292" y="155" font-size="10" fill="#82766d">20h</text>
+        </svg>
+      </div>
+      <div class="timeline">
+        <h3 data-i18n="timelineTitle">今晚时间线</h3>
+        <div id="timelineEvents">
+          <div class="event"><time>现在</time><div class="line"></div><div><b>等待你的选择</b><p>生成模拟后，这里会出现相关时间点。</p></div></div>
+        </div>
+      </div>
+      <div class="ai-box"><div class="ai-tag">✦ AI-STYLE COACH · DEMO</div><p id="aiNarrative" data-i18n="aiInitial">先选择饮品吧。我们会用轻松的方式解释模型结果，不会预测你几点一定睡着。</p><div class="suggestions" id="suggestions"></div></div>
+    </aside>
+  </section>
 
-<div class="result" id="resBox">
-<div>当前体内剩余咖啡因：<strong id="resCaf">--</strong> mg</div>
-<div>本次计算半衰期：<strong id="resHalf">--</strong> h</div>
-<div>预计咖啡因降至 20mg 以下：<strong id="resTime">--</strong></div>
-</div>
-<div class="note">⚠️ 模型说明：采用标准一级消除动力学一室模型，仅为群体统计估算，个体差异很大，不能作为医疗判断依据。</div>
-<canvas id="chart"></canvas>
-</div>
+  <section class="card science" id="science">
+    <div class="card-head"><div><h2 data-i18n="scienceTitle">科学模型与隐私承诺</h2><div class="sub" data-i18n="scienceSub">把可计算的部分算清楚，把不确定的部分说诚实。</div></div></div>
+    <div class="science-grid">
+      <div class="science-item"><div class="icon">🧮</div><h3 data-i18n="science1Title">确定性模型</h3><p data-i18n="science1">咖啡因按半衰期公式衰减。默认 5 小时，个体差异可能很大；这里的 3–7 小时敏感度范围只是演示假设。</p></div>
+      <div class="science-item"><div class="icon">✨</div><h3 data-i18n="science2Title">AI 负责解释</h3><p data-i18n="science2">本版本使用规则模板模拟 AI 旁白。真实 OCR、外部营养数据库和生成式 AI 尚未接入。</p></div>
+      <div class="science-item"><div class="icon">🔒</div><h3 data-i18n="science3Title">隐私优先</h3><p data-i18n="science3">不发送数据到服务器、不上传照片。刷新页面后，当前输入不会作为个人档案保存。</p></div>
+    </div>
+    <div class="disclaimer" data-i18n="disclaimer"><b>免责声明：</b>本网站仅用于健康意识教育与概念演示，不构成医疗建议。饮品营养数值为宽范围示例估算，非品牌实测；真实含量会因配方、份量和制作方式而变化。糖分反应因人而异，不能据此预测“糖分崩溃”的准确时间，也不能保证入睡时间。若有健康疑虑，请咨询合格的医疗专业人士。</div>
+  </section>
+</main>
+<footer>© Sugar Crash Simulator · Prototype demo · <span data-i18n="footer">本原型为前端演示，不代表真实医疗或 AI 服务。</span></footer>
 
 <script>
-// 获取DOM
-const $ = s=>document.querySelector(s);
-let ctx = $("#chart").getContext("2d");
-
-// 【核心函数：根据选项动态计算半衰期，替换原来固定值】
-function getHalfLife(){
-    let hl = 5.0; // 基准半衰期
-    const smoke = $("#smoke").value;
-    const oc = $("#oc").value;
-    const liver = $("#liver").value;
-    const age = $("#age").value;
-
-    if(smoke==="yes") hl -= 1.8;
-    if(oc==="yes") hl += 3.5;
-    if(liver==="impaired") hl += 3.0;
-    if(age==="young") hl -= 0.8;
-    if(age==="old") hl += 1.0;
-
-    return Math.max(2.5, hl); // 下限保护，避免不合理数值
+const drinks={
+ milkTea:{c:[30,80],s:[25,55],name:"珍珠奶茶",en:"Bubble milk tea",emoji:"🧋"},
+ kopi:{c:[60,120],s:[8,25],name:"咖啡乌 kopi",en:"Kopi O",emoji:"☕"},
+ coffee:{c:[70,140],s:[0,2],name:"黑咖啡",en:"Black coffee",emoji:"☕"},
+ energy:{c:[70,160],s:[20,45],name:"能量饮料",en:"Energy drink",emoji:"⚡"},
+ chocolate:{c:[5,25],s:[10,35],name:"巧克力",en:"Chocolate",emoji:"🍫"},
+ fruitTea:{c:[10,55],s:[15,45],name:"水果茶",en:"Fruit tea",emoji:"🍊"}
+};
+let selectedDrink="milkTea", lang="zh";
+const $=id=>document.getElementById(id);
+function nowTime(){const d=new Date();return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}
+$("drinkTime").value=nowTime();
+document.querySelectorAll(".drink").forEach(b=>b.addEventListener("click",()=>{selectedDrink=b.dataset.drink;document.querySelectorAll(".drink").forEach(x=>x.classList.toggle("selected",x===b));}));
+$("startBtn").addEventListener("click",()=>$("planner").scrollIntoView({behavior:"smooth"}));
+$("scienceBtn").addEventListener("click",()=>$("science").scrollIntoView({behavior:"smooth"}));
+document.querySelectorAll("[data-scroll]").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("[data-scroll]").forEach(x=>x.classList.toggle("active",x===b));$(b.dataset.scroll).scrollIntoView({behavior:"smooth"});}));
+$("labelPhoto").addEventListener("change",e=>{const file=e.target.files&&e.target.files[0];if(!file)return;const img=$("photoPreview");img.src=URL.createObjectURL(file);img.style.display="block";});
+function parseTime(s){const [h,m]=s.split(":").map(Number);return h*60+m}
+function fmtTime(minutes){minutes=((minutes%1440)+1440)%1440;return String(Math.floor(minutes/60)).padStart(2,"0")+":"+String(minutes%60).padStart(2,"0")}
+function fmtRange(a,b){return `${Math.round(a)}–${Math.round(b)}`}
+function makeCurve(halfLife){const path=[];for(let i=0;i<=20;i+=.5){const x=35+(i/20)*285;const y=20+115*(1-Math.pow(.5,i/halfLife));path.push((i===0?"M":"L")+x.toFixed(1)+" "+y.toFixed(1))}$("curve").setAttribute("d",path.join(" "))}
+function simulate(){
+ const drink=drinks[selectedDrink], size=Number($("size").value), sweetness=Number($("sweetness").value);
+ const factor=size/500, cLo=drink.c[0]*factor,cHi=drink.c[1]*factor;
+ const sLo=drink.s[0]*factor*sweetness,sHi=drink.s[1]*factor*sweetness;
+ const dt=(parseTime($("sleepTime").value)-parseTime($("drinkTime").value)+1440)%1440;
+ const sensitivity=$("sensitivity").value;
+ const halfLife=sensitivity==="high"?7:sensitivity==="low"?3:5;
+ // Use a conservative 3-7 h band for uncertainty display; user selection changes illustrative midpoint only.
+ const rLo=cLo*Math.pow(.5,dt/7),rMid=((cLo+cHi)/2)*Math.pow(.5,dt/halfLife),rHi=cHi*Math.pow(.5,dt/3);
+ $("caffeineValue").textContent=fmtRange(cLo,cHi)+" mg";
+ $("residualValue").textContent=fmtRange(rLo,rHi)+" mg";
+ $("sugarValue").textContent=fmtRange(sLo,sHi)+" g";
+ $("hoursValue").textContent=(dt/60).toFixed(1)+" h";
+ $("resultHeadline").textContent=lang==="zh"?`${drink.name}：先看理论残留`:`${drink.en}: estimated residue`;
+ $("resultSubline").textContent=lang==="zh"?`目标睡觉时间 ${$("sleepTime").value} · 采用 ${halfLife} 小时演示半衰期`:`Target bedtime ${$("sleepTime").value} · illustrative ${halfLife} h half-life`;
+ makeCurve(halfLife);
+ const sleep=parseTime($("sleepTime").value), drinkAt=parseTime($("drinkTime").value);
+ const after=fmtTime(drinkAt+300);
+ const half=fmtTime(drinkAt+halfLife*60);
+ const events=[
+  {time:$("drinkTime").value,title:lang==="zh"?"饮用时刻":"Drink time",desc:lang==="zh"?`模型从约 ${fmtRange(cLo,cHi)} mg 咖啡因开始估算。`:`Model starts with an estimated ${fmtRange(cLo,cHi)} mg caffeine.`},
+  {time:half,title:lang==="zh"?`约 ${halfLife} 小时后`:`After about ${halfLife} h`,desc:lang==="zh"?"按所选半衰期，理论残留约为初始量的一半。":"With the selected half-life, about half remains in the model."},
+  {time:$("sleepTime").value,title:lang==="zh"?"计划入睡时间":"Planned bedtime",desc:lang==="zh"?`理论残留范围约 ${fmtRange(rLo,rHi)} mg；这不是睡眠结果预测。`:`Theoretical residue range: ${fmtRange(rLo,rHi)} mg; this does not predict sleep.`}
+ ];
+ $("timelineEvents").innerHTML=events.map(e=>`<div class="event"><time>${e.time}</time><div class="line"></div><div><b>${e.title}</b><p>${e.desc}</p></div></div>`).join("");
+ const sensitivityText=sensitivity==="high"?(lang==="zh"?"你选择了“到半夜都很精神”，所以展示较长半衰期情景。":"You selected high sensitivity, so the model shows a longer half-life scenario."):sensitivity==="low"?(lang==="zh"?"你选择了“几乎没感觉”，但主观感受不等于体内咖啡因已清除。":"Low perceived effect does not mean caffeine has cleared."): (lang==="zh"?"敏感度未知时采用 5 小时作为演示中点。":"When sensitivity is unknown, 5 hours is used as an illustrative midpoint.");
+ $("aiNarrative").textContent=lang==="zh"?`${drink.emoji} ${drink.name} 已加入今晚的“时间线”。${sensitivityText} 咖啡因像一位离场很慢的客人：时间会让它逐渐减少，但这张图不能告诉你几点一定睡着。`:`${drink.emoji} ${drink.en} is on tonight's timeline. ${sensitivityText} Caffeine is a slow-to-leave guest: time reduces it, but this chart cannot tell exactly when you will fall asleep.`;
+ const tips=lang==="zh"?[
+  "如果担心睡眠影响，可以考虑更小份量，或选择低因 / 无因版本。",
+  "查看店家营养标签或官方资料，可替换目前的宽范围估算。",
+  "少糖主要改变糖分估算，不代表咖啡因也会同步减少。"
+ ]:[
+  "If concerned about sleep, consider a smaller serving or a low-/caffeine-free option.",
+  "Use a shop nutrition label or reliable source to replace this broad estimate.",
+  "Less sugar changes the sugar estimate; it does not necessarily reduce caffeine."
+ ];
+ $("suggestions").innerHTML=tips.map(t=>`<div class="suggestion"><span class="check">✓</span><p>${t}</p></div>`).join("");
+ $("results").scrollIntoView({behavior:"smooth",block:"start"});
 }
-
-function calc(){
-    const caf0 = Number($("#caffeine").value);
-    const sugar = Number($("#sugar").value);
-    const elapsed = Number($("#elapsed").value);
-    const hl = getHalfLife();
-
-    // 一级消除公式：C = C0 * 0.5^(t / half)
-    const remaining = caf0 * Math.pow(0.5, elapsed / hl);
-
-    // 求降到20mg需要多久（从摄入时刻算起）
-    const target = 20;
-    let timeTo20 = "已经低于20mg";
-    if(remaining > target){
-        const totalT = hl * Math.log2(caf0 / target);
-        const wait = totalT - elapsed;
-        timeTo20 = `${wait.toFixed(1)}小时后`;
-    }
-
-    $("#resCaf").textContent = remaining.toFixed(1);
-    $("#resHalf").textContent = hl.toFixed(1);
-    $("#resTime").textContent = timeTo20;
-
-    drawCurve(caf0, hl, elapsed);
-}
-
-function drawCurve(caf0, hl, nowT){
-    ctx.clearRect(0,0,$("#chart").width,$("#chart").height);
-    const w = $("#chart").width;
-    const h = $("#chart").height;
-    ctx.beginPath();
-    ctx.strokeStyle="#79563f";
-    ctx.lineWidth=2;
-    const maxT = Math.max(nowT + 8, hl*3);
-    for(let x=0;x<=w;x++){
-        const t = x/w * maxT;
-        const c = caf0 * Math.pow(0.5, t/hl);
-        const y = h - (c/caf0)*h;
-        if(x===0) ctx.moveTo(x,y);
-        else ctx.lineTo(x,y);
-    }
-    ctx.stroke();
-    // 当前时刻标记点
-    const xNow = nowT/maxT * w;
-    const cNow = caf0 * Math.pow(0.5, nowT/hl);
-    const yNow = h - (cNow/caf0)*h;
-    ctx.fillStyle="#b77b4b";
-    ctx.beginPath();
-    ctx.arc(xNow,yNow,6,0,Math.PI*2);
-    ctx.fill();
-}
-
-calc();
+$("simulateBtn").addEventListener("click",simulate);
+const translations={
+ en:{
+ navHome:"Home",navPlan:"Quick simulation",navScience:"Science & privacy",eyebrow:"SMART SIPS · BETTER SLEEP",
+ heroTitle:'What time do you want to sleep?<br><span>Start with what’s in your cup.</span>',
+ heroLead:"Choose a drink and see how much caffeine the simplified model estimates may remain by bedtime. This is awareness, not diagnosis.",
+ start:"Start 10-second simulation →",learn:"Explore the science",artTitle:"One drink, one gentle reminder",artText:"Understand possible effects without overthinking.",
+ plannerTitle:"Tonight’s drink plan",plannerSub:"Three quick inputs are enough. Everything else is optional.",step:"STEP 01 / 03",
+ drinkLabel:"1. Choose a drink / snack",dMilk:"Bubble milk tea",dCoffee:"Black coffee",dEnergy:"Energy drink",dChoc:"Chocolate",dFruit:"Fruit tea",
+ sizeLabel:"2. Cup size / volume",sleepLabel:"3. Planned bedtime",drinkTimeLabel:"Drink time (defaults to now)",sweetLabel:"Sugar level (optional)",
+ lessSweet:"Less sugar (estimate)",halfSweet:"Half sugar (estimate)",fullSweet:"Full sugar (estimate)",unknownSweet:"Unsure / default estimate",
+ personal:"+ Personalization (optional)",sensLabel:"How does caffeine affect you?",sensLow:"Hardly notice it",sensNormal:"Normal / unsure",sensHigh:"Still wired at midnight",
+ ageLabel:"Age (optional)",routineLabel:"Usual routine",routineRegular:"Fairly regular",routineLate:"Often sleep late",routineShift:"Irregular schedule",
+ freqLabel:"Ordering frequency (optional)",freqNo:"Do not track",freqRare:"1–2 times a week",freqSome:"3–4 times a week",freqOften:"5+ times a week",
+ privacyNote:"Height and weight are not required or collected. Inputs are calculated in this page and are not uploaded.",
+ photoLabel:"Upload a nutrition label (demo)",photoText:"📷 Choose an image to preview locally",photoNote:"This version only previews the image locally. OCR / vision AI is not connected; no nutrition data is claimed to be recognized.",
+ simulate:"Generate my simulation →",resultTitle:"Your simulation",resultSub:"Simplified model, not a personal sleep prediction.",demo:"DEMO ESTIMATE",
+ initialHeadline:"Choose a drink to begin",initialSub:"Your theoretical residue curve will appear here.",caffeineMetric:"Estimated caffeine",caffeineDesc:"mg · illustrative range",
+ residualMetric:"Theoretical residue at bedtime",residualDesc:"mg · half-life model",sugarMetric:"Estimated sugar",sugarDesc:"g · not brand-tested",timeMetric:"Time until bedtime",timeDesc:"Interval only, not sleep difficulty",
+ chartTitle:"Theoretical caffeine residue",chartLegend:"Default half-life: 5 h",timelineTitle:"Tonight’s timeline",aiInitial:"Choose a drink first. We’ll explain the model in a light tone without predicting exactly when you’ll fall asleep.",
+ scienceTitle:"Science & privacy promise",scienceSub:"Calculate what can be calculated; be honest about uncertainty.",
+ science1Title:"Deterministic model",science1:"Caffeine decays according to a half-life formula. Five hours is the default; individual variation can be large. The 3–7 h range is an illustrative assumption.",
+ science2Title:"AI explains",science2:"This version uses rule-based templates to simulate an AI narrator. Real OCR, external nutrition databases, and generative AI are not connected.",
+ science3Title:"Privacy first",science3:"No data is sent to a server and photos are not uploaded. Current inputs are not saved as a profile after refresh.",
+ disclaimer:"Disclaimer: This site is for health-awareness education and concept demonstration only, not medical advice. Nutrition values are broad illustrative estimates, not brand-tested data; actual amounts vary by recipe, serving size, and preparation. Sugar responses vary, so the model cannot predict an exact “sugar crash” time or guarantee bedtime. Consult a qualified health professional if you have health concerns.",
+ footer:"This is a frontend prototype, not a real medical or AI service."
+ },
+ zh:{
+ navHome:"首页",navPlan:"快速模拟",navScience:"科学与隐私",eyebrow:"SMART SIPS · BETTER SLEEP",
+ heroTitle:'今晚想几点睡？<br><span>先从这杯开始规划。</span>',
+ heroLead:"选一杯你喜欢的饮品，看看其中的咖啡因可能在目标睡觉时间还剩多少。不是诊断，而是让选择更有意识。",
+ start:"开始 10 秒模拟 →",learn:"了解科学模型",artTitle:"一杯饮品，一份小提醒",artText:"了解可能的影响，不必过度担心。",
+ plannerTitle:"今晚的饮品计划",plannerSub:"只填 3 项即可查看模拟结果；其他信息完全可选。",step:"STEP 01 / 03",
+ drinkLabel:"1. 选择饮品 / 零食",dMilk:"珍珠奶茶",dCoffee:"黑咖啡",dEnergy:"能量饮料",dChoc:"巧克力",dFruit:"水果茶",
+ sizeLabel:"2. 杯型 / 容量",sleepLabel:"3. 计划入睡时间",drinkTimeLabel:"饮用时间（默认现在）",sweetLabel:"甜度（可选）",
+ lessSweet:"少糖 / 低糖（估算）",halfSweet:"半糖（估算）",fullSweet:"全糖（估算）",unknownSweet:"不确定 / 默认估算",
+ personal:"＋ 个性化设置（可选）",sensLabel:"咖啡因对你的影响",sensLow:"几乎没感觉",sensNormal:"正常 / 不确定",sensHigh:"到半夜都很精神",
+ ageLabel:"年龄（可不填）",routineLabel:"平时作息",routineRegular:"比较规律",routineLate:"经常晚睡",routineShift:"作息不固定",
+ freqLabel:"点单频率（可选）",freqNo:"暂不记录",freqRare:"每周 1–2 次",freqSome:"每周 3–4 次",freqOften:"每周 5 次以上",
+ privacyNote:"身高、体重不是必填项，本原型不收集它们；输入仅在当前页面计算，不会上传服务器。",
+ photoLabel:"拍摄 / 上传营养标签（演示入口）",photoText:"📷 选择营养标签图片，在本地预览",photoNote:"当前版本仅提供本地预览，尚未接入 OCR / 视觉 AI，不会假装已经识别营养数据。",
+ simulate:"生成我的模拟结果 →",resultTitle:"你的模拟结果",resultSub:"依据简化模型，非个人睡眠预测。",demo:"演示估算",
+ initialHeadline:"先选择饮品，开始模拟",initialSub:"你的理论残留曲线会显示在这里。",caffeineMetric:"估算咖啡因",caffeineDesc:"毫克 · 示例范围",
+ residualMetric:"目标睡觉时理论残留",residualDesc:"毫克 · 半衰期模型",sugarMetric:"估算糖分",sugarDesc:"克 · 非品牌实测数据",timeMetric:"饮用至睡觉",timeDesc:"时间间隔，不代表入睡难度",
+ chartTitle:"咖啡因理论残留曲线",chartLegend:"默认半衰期 5 小时",timelineTitle:"今晚时间线",aiInitial:"先选择饮品吧。我们会用轻松的方式解释模型结果，不会预测你几点一定睡着。",
+ scienceTitle:"科学模型与隐私承诺",scienceSub:"把可计算的部分算清楚，把不确定的部分说诚实。",
+ science1Title:"确定性模型",science1:"咖啡因按半衰期公式衰减。默认 5 小时，个体差异可能很大；这里的 3–7 小时敏感度范围只是演示假设。",
+ science2Title:"AI 负责解释",science2:"本版本使用规则模板模拟 AI 旁白。真实 OCR、外部营养数据库和生成式 AI 尚未接入。",
+ science3Title:"隐私优先",science3:"不发送数据到服务器、不上传照片。刷新页面后，当前输入不会作为个人档案保存。",
+ disclaimer:"免责声明：本网站仅用于健康意识教育与概念演示，不构成医疗建议。饮品营养数值为宽范围示例估算，非品牌实测；真实含量会因配方、份量和制作方式而变化。糖分反应因人而异，不能据此预测“糖分崩溃”的准确时间，也不能保证入睡时间。若有健康疑虑，请咨询合格的医疗专业人士。",
+ footer:"本原型为前端演示，不代表真实医疗或 AI 服务。"
+ }
+};
+function setLang(next){lang=next;document.documentElement.lang=lang==="zh"?"zh-CN":"en";document.querySelectorAll("[data-i18n]").forEach(el=>{const k=el.dataset.i18n;if(translations[lang][k])el.innerHTML=translations[lang][k]});$("langToggle").textContent=lang==="zh"?"EN / 中":"中 / EN";if($("caffeineValue").textContent!=="—")simulate();}
+$("langToggle").addEventListener("click",()=>setLang(lang==="zh"?"en":"zh"));
 </script>
 </body>
 </html>
